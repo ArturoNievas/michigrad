@@ -1,4 +1,4 @@
-import random
+import numpy as np
 from michigrad.engine import Value
 
 class Module:
@@ -10,31 +10,48 @@ class Module:
     def parameters(self):
         return []
 
+class relu(Module):
+    def __call__(self, x):
+        if isinstance(x, list):
+            return [xi.relu() for xi in x]
+        return x.relu()
+
+class tanh(Module):
+    def __call__(self, x):
+        if isinstance(x, list):
+            return [xi.tanh() for xi in x]
+        return x.tanh()
+    
+class sigmoide(Module):
+    def __call__(self, x):
+        if isinstance(x, list):
+            return [xi.sigmoide() for xi in x]
+        return x.sigmoide()
+
 class Neuron(Module):
 
-    def __init__(self, nin, nonlin=True):
-        self.w = [Value(random.uniform(-1,1)) for _ in range(nin)]
-        self.b = Value(0)
-        self.nonlin = nonlin
+    def __init__(self, nin):
+        self.w = [Value(np.random.uniform(-1, 1)) for _ in range(nin)]
+        self.b = Value(np.random.uniform(-1, 1))
 
     def __call__(self, x):
         act = sum((wi*xi for wi,xi in zip(self.w, x)), self.b)
-        return act.relu() if self.nonlin else act
+        return act
 
     def parameters(self):
         return self.w + [self.b]
 
     def __repr__(self):
-        return f"{'ReLU' if self.nonlin else 'Linear'}Neuron({len(self.w)})"
+        return f"LinearNeuron({len(self.w)})"
 
 class Layer(Module):
 
-    def __init__(self, nin, nout, **kwargs):
-        self.neurons = [Neuron(nin, **kwargs) for _ in range(nout)]
+    def __init__(self, nin, nout):
+        self.neurons = [Neuron(nin) for _ in range(nout)]
 
     def __call__(self, x):
         out = [n(x) for n in self.neurons]
-        return out[0] if len(out) == 1 else out
+        return out
 
     def parameters(self):
         return [p for n in self.neurons for p in n.parameters()]
@@ -44,13 +61,19 @@ class Layer(Module):
 
 class MLP(Module):
 
-    def __init__(self, nin, nouts):
+    def __init__(self, nin, nouts, *metodos):
         sz = [nin] + nouts
-        self.layers = [Layer(sz[i], sz[i+1], nonlin=i!=len(nouts)-1) for i in range(len(nouts))]
+        self.layers = []
+        for i in range(len(nouts)):
+            self.layers.append(Layer(sz[i], sz[i+1]))
+            if i < len(metodos):
+                self.layers.append(metodos[i])
 
     def __call__(self, x):
         for layer in self.layers:
             x = layer(x)
+        if isinstance(x, list) and len(x) == 1:
+            return x[0]
         return x
 
     def parameters(self):

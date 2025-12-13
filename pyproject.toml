@@ -1,0 +1,46 @@
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "michigrad"
+version = "0.1.0"
+description = "Educational autograd engine for scalar values"
+readme = "README.md"
+requires-python = ">=3.7"
+license = {text = "MIT"}
+authors = [
+    {name = "Arturo Nievas", email = "arturo@example.com"}
+]
+keywords = ["autograd", "neural-networks", "automatic-differentiation"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Education",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+]
+
+dependencies = [
+    "numpy>=1.19.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "torch>=1.9.0",
+]
+viz = [
+    "graphviz>=0.13",
+    "networkx>=2.6",
+    "pyvis>=0.3.0",
+]
+notebook = [
+    "jupyter>=1.0.0",
+    "ipython>=7.0.0",
+]
+
+[tool.setuptools]
+packages = ["michigrad"]

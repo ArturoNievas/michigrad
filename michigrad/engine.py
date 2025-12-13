@@ -1,5 +1,6 @@
 # Calcado de Micrograd (https://github.com/karpathy/micrograd/blob/master/micrograd/engine.py)
 import math
+import numpy as np
 class Value:
     """ stores a single scalar value and its gradient """
 
@@ -51,6 +52,22 @@ class Value:
             self.grad += (out.data > 0) * out.grad
         out._backward = _backward
 
+        return out
+    
+    def tanh(self):
+        x=self.data
+        t=(np.e**(2*x)-1)/(np.e**(2*x)+1)
+        out = Value(t,_children=(self, ), _op="tanh")
+        def _backward():
+            self.grad+=(1-t**2)*out.grad
+        out._backward=_backward
+        return out
+    
+    def sigmoide(self):
+        out = Value(1 / (1 + np.exp(-self.data)), _children=(self,), _op='sigmoide')
+        def _backward():
+            self.grad += out.data * (1 - out.data) * out.grad
+        out._backward = _backward
         return out
 
     def exp(self):
