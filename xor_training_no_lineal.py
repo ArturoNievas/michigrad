@@ -6,7 +6,7 @@ Usando michigrad, con ReLU en la capa oculta.
 import os
 import numpy as np
 from michigrad.engine import Value
-from michigrad.nn import MLP, relu
+from michigrad.nn import MLP, relu, sigmoide
 from michigrad.visualize import show_graph
 
 # Configurar Graphviz
@@ -27,13 +27,13 @@ for x, y in zip(xs, ys):
     print(f"  {x} -> {y}")
 
 # Crear modelo con ReLU en capa oculta
-model = MLP(2, [2, 1], relu())
+model = MLP(2, [2, 1], sigmoide())
 
 print("\nModelo:", model)
 print("Parámetros:", len(model.parameters()))
 
 learning_rate = 0.1
-epochs = 125
+epochs = 2500
 print(f"Learning rate: {learning_rate}, Épocas: {epochs}\n")
 
 # Primera iteración
